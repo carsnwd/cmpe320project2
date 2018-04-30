@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
+//NOTE!!!! RUN WITH gcc main.c -lm !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 char* convertIntToBinary(int numberToConvert);
 int charBinaryToInt(char *binary);
 // char* convertBinaryToTwosCompliment(char *binaryString);
@@ -20,6 +22,8 @@ int main(){
     printf("Binary of your decimal is signed twos comp is %s\n", bin);
     // twosCompliment = convertBinaryToTwosCompliment(bin);
     // printf("Twos Compliment is %s \n", twosCompliment);
+    int dec2 = charBinaryToInt(bin);
+    printf("Converting it back to decimal... %d", dec2);
     return 0;
 }
 
@@ -49,7 +53,16 @@ char *convertIntToBinary(int numberToConvert){
 }
 
 int charBinaryToInt(char *binary){
-
+    int length = strlen(binary) - 2;
+    int count = 0;
+    int sum = 0;
+    for(int i = length; i>=0; i--){
+        if(binary[i] == '1'){
+            sum = sum + pow(2,(length - count));
+        }
+        count++;
+    }
+    return sum;
 }
 
 // char *convertBinaryToTwosCompliment(char *binaryString){

@@ -6,7 +6,9 @@
 
 //NOTE!!!! RUN WITH gcc main.c -lm !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 char* convertIntToBinary(int numberToConvert);
-int charBinaryToInt(char *binary);
+int convertBinaryToInt(char *binary);
+int getPageNumber(int dec);
+int getOffset(int dec);
 // char* convertBinaryToTwosCompliment(char *binaryString);
  
 int main(){
@@ -17,13 +19,10 @@ int main(){
     printf("Enter a decimal number: ");
     scanf("%d", &dec);
     printf("Your decimal is %d \n", dec);
-    bin = convertIntToBinary(dec);
-    int i = 0;
-    printf("Binary of your decimal is signed twos comp is %s\n", bin);
-    // twosCompliment = convertBinaryToTwosCompliment(bin);
-    // printf("Twos Compliment is %s \n", twosCompliment);
-    int dec2 = charBinaryToInt(bin);
-    printf("Converting it back to decimal... %d", dec2);
+    int pageNumber = getPageNumber(dec);
+    printf("The page number is: %d\n", pageNumber);
+    int offset = getOffset(dec);
+    printf("The offset number is: %d\n", offset);
     return 0;
 }
 
@@ -39,20 +38,16 @@ char *convertIntToBinary(int numberToConvert){
 
     int k = 0;
     for (int j = i - 1; j >= 0; j--){
-        printf("k = %d , i = %d , j = %d\n", k,i,j);
         binaryString[k] = binaryArray[j] + '0';
-        printf("binaryArray[%d] %d\n",j,binaryArray[j]);
-        printf("binaryString[%d] %d \n",k,binaryString[k]);
         k++;
     }
 
-    printf("Inside convertfunc, your binary is %s\n", binaryString);
     char *returnString = malloc(1001);
     returnString[0] = '0';
     return strcat(returnString, binaryString);
 }
 
-int charBinaryToInt(char *binary){
+int convertBinaryToInt(char *binary){
     int length = strlen(binary) - 2;
     int count = 0;
     int sum = 0;
@@ -65,6 +60,23 @@ int charBinaryToInt(char *binary){
     return sum;
 }
 
+int getPageNumber(int dec){
+    char *bin = convertIntToBinary(dec);
+    char pageNumberBinary[9];
+    memcpy(pageNumberBinary, &bin[0], 8);
+    pageNumberBinary[8] = '\0';
+    int pageNumberDecimal = convertBinaryToInt(pageNumberBinary);
+    return pageNumberDecimal;
+}
+
+int getOffset(int dec){
+    char *bin = convertIntToBinary(dec);
+    char offsetBinary[8];
+    memcpy(offsetBinary, &bin[9], 7);
+    offsetBinary[7] = '\0';
+    int offsetDecimal = convertBinaryToInt(offsetBinary);
+    return offsetDecimal;
+}
 // char *convertBinaryToTwosCompliment(char *binaryString){
 //     int i;
 //     int n = strlen(binaryString);

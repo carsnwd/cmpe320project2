@@ -4,7 +4,8 @@
 #include <string.h>
 
 char* convertIntToBinary(int numberToConvert);
-char* convertBinaryToTwosCompliment(char *binaryString);
+int charBinaryToInt(char *binary);
+// char* convertBinaryToTwosCompliment(char *binaryString);
  
 int main(){
     int dec;
@@ -16,10 +17,9 @@ int main(){
     printf("Your decimal is %d \n", dec);
     bin = convertIntToBinary(dec);
     int i = 0;
-    printf("Binary of your decimal is %s\n", bin);
-    twosCompliment = convertBinaryToTwosCompliment(bin);
-    printf("Twos Compliment is %s \n", twosCompliment);
- 
+    printf("Binary of your decimal is signed twos comp is %s\n", bin);
+    // twosCompliment = convertBinaryToTwosCompliment(bin);
+    // printf("Twos Compliment is %s \n", twosCompliment);
     return 0;
 }
 
@@ -43,29 +43,35 @@ char *convertIntToBinary(int numberToConvert){
     }
 
     printf("Inside convertfunc, your binary is %s\n", binaryString);
-    return binaryString;
+    char *returnString = malloc(1001);
+    returnString[0] = '0';
+    return strcat(returnString, binaryString);
 }
 
-char *convertBinaryToTwosCompliment(char *binaryString){
-    int i;
-    int n = strlen(binaryString);
-    for (i = n ; i >= 0 ; i--){
-        if (binaryString[i] == '1'){
-            break;
-        }
-    }
-    if(i==0){
-        return '1' + binaryString;
-    }
-    for (int k = i-1 ; k >= 0; k--){
-        //Just flip the values
-        if (binaryString[k] == '1'){
-            binaryString[k] = '0';
-        }
-        else{
-            binaryString[k] = '1';
-        }
-    }
-    return binaryString;
+int charBinaryToInt(char *binary){
+
 }
+
+// char *convertBinaryToTwosCompliment(char *binaryString){
+//     int i;
+//     int n = strlen(binaryString);
+//     for (i = n ; i >= 0 ; i--){
+//         if (binaryString[i] == '1'){
+//             break;
+//         }
+//     }
+//     if(i==0){
+//         return '1' + binaryString;
+//     }
+//     for (int k = i-1 ; k >= 0; k--){
+//         //Just flip the values
+//         if (binaryString[k] == '1'){
+//             binaryString[k] = '0';
+//         }
+//         else{
+//             binaryString[k] = '1';
+//         }
+//     }
+//     return binaryString;
+// }
 

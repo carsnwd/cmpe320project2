@@ -31,6 +31,9 @@ int main(){
     return 0;
 }
 
+/**
+ * Converts an int to binary string. 
+ **/
 char *convertIntToBinary(int numberToConvert){
     char *binaryString = malloc(1001);
     int binaryArray[1000];
@@ -56,20 +59,16 @@ char *convertIntToBinary(int numberToConvert){
     return strcat(returnString, binaryString);
 }
 
+/**
+ * Converts a binary string to an int. 
+ **/
 int convertBinaryToInt(char *binary){
     return (int) strtol(binary, NULL, 2);
-    // int length = strlen(binary) - 1;
-    // int count = 0;
-    // int sum = 0;
-    // for(int i = length; i>=0; i--){
-    //     if(binary[i] == '1'){
-    //         sum = sum + pow(2,(length - count));
-    //     }
-    //     count++;
-    // }
-    // return sum;
 }
 
+/**
+ * Given the int, it will get he page number.
+ **/
 int getPageNumber(int dec){
     char *bin = convertIntToBinary(dec);
     char pageNumberBinary[9];
@@ -79,6 +78,9 @@ int getPageNumber(int dec){
     return pageNumberDecimal;
 }
 
+/**
+ * Given the int, it will get he offset.
+ **/
 int getOffset(int dec){
     char *bin = convertIntToBinary(dec);
     char offsetBinary[9];
@@ -88,6 +90,9 @@ int getOffset(int dec){
     return offsetDecimal;
 }
 
+/**
+ * Prepends a char infront of a string.
+ ***/
 void prepend(char* s, const char* t)
 {
     size_t len = strlen(t);
@@ -99,27 +104,3 @@ void prepend(char* s, const char* t)
         s[i] = t[i];
     }
 }
-
-// char *convertBinaryToTwosCompliment(char *binaryString){
-//     int i;
-//     int n = strlen(binaryString);
-//     for (i = n ; i >= 0 ; i--){
-//         if (binaryString[i] == '1'){
-//             break;
-//         }
-//     }
-//     if(i==0){
-//         return '1' + binaryString;
-//     }
-//     for (int k = i-1 ; k >= 0; k--){
-//         //Just flip the values
-//         if (binaryString[k] == '1'){
-//             binaryString[k] = '0';
-//         }
-//         else{
-//             binaryString[k] = '1';
-//         }
-//     }
-//     return binaryString;
-// }
-

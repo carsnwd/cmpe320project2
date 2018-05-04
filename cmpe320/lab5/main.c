@@ -9,16 +9,21 @@ char* convertIntToBinary(int numberToConvert);
 int convertBinaryToInt(char *binary);
 int getPageNumber(int dec);
 int getOffset(int dec);
+void prepend(char* s, const char* t);
 // char* convertBinaryToTwosCompliment(char *binaryString);
  
 int main(){
     int dec;
     char *bin;
-    char *twosCompliment = malloc(1001);
+    //char *twosCompliment = malloc(1001);
  
     printf("Enter a decimal number: ");
+    fflush(stdout);
     scanf("%d", &dec);
     printf("Your decimal is %d \n", dec);
+    fflush(stdout);
+    bin = convertIntToBinary(dec);
+    printf("Your binary is %s\n", bin);
     int pageNumber = getPageNumber(dec);
     printf("The page number is: %d\n", pageNumber);
     int offset = getOffset(dec);
@@ -43,21 +48,26 @@ char *convertIntToBinary(int numberToConvert){
     }
 
     char *returnString = malloc(1001);
-    returnString[0] = '0';
+    int length = strlen(binaryString);
+    while(length != 16){ //convert to 16 bit string
+            prepend(returnString, "0");
+            length++;
+    }
     return strcat(returnString, binaryString);
 }
 
 int convertBinaryToInt(char *binary){
-    int length = strlen(binary) - 2;
-    int count = 0;
-    int sum = 0;
-    for(int i = length; i>=0; i--){
-        if(binary[i] == '1'){
-            sum = sum + pow(2,(length - count));
-        }
-        count++;
-    }
-    return sum;
+    return (int) strtol(binary, NULL, 2);
+    // int length = strlen(binary) - 1;
+    // int count = 0;
+    // int sum = 0;
+    // for(int i = length; i>=0; i--){
+    //     if(binary[i] == '1'){
+    //         sum = sum + pow(2,(length - count));
+    //     }
+    //     count++;
+    // }
+    // return sum;
 }
 
 int getPageNumber(int dec){
@@ -71,12 +81,25 @@ int getPageNumber(int dec){
 
 int getOffset(int dec){
     char *bin = convertIntToBinary(dec);
-    char offsetBinary[8];
-    memcpy(offsetBinary, &bin[9], 7);
-    offsetBinary[7] = '\0';
+    char offsetBinary[9];
+    memcpy(offsetBinary, &bin[8], 8);
+    offsetBinary[8] = '\0';
     int offsetDecimal = convertBinaryToInt(offsetBinary);
     return offsetDecimal;
 }
+
+void prepend(char* s, const char* t)
+{
+    size_t len = strlen(t);
+    size_t i;
+
+    memmove(s + len, s, strlen(s) + 1);
+
+    for (i = 0; i < len; ++i){
+        s[i] = t[i];
+    }
+}
+
 // char *convertBinaryToTwosCompliment(char *binaryString){
 //     int i;
 //     int n = strlen(binaryString);

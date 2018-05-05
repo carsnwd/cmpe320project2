@@ -52,10 +52,18 @@ int main(){
     printf("TLB Rate = %f\n", rate2);
 }
 
+/**
+* Given frame and offset, calculate the physical address
+**/
 int calculatePhysicalAddress(int frameNumber, int offset){
     return (frameNumber*256) + offset;
 }
 
+/**
+* Finds the frame given the pageNumber. Consults the TLB first
+* but then consults the page table if that doesn't work. Handles
+* page faults.
+**/
 int locateFrame(int pageNumber){
     int i = 0;
     for(i = 0; i<16; i++){
@@ -182,6 +190,9 @@ char **getVirtualAddressesValues(){
     return virtualAddressValuesTable;
 }
 
+/**
+* Reads in the virtual addresses from the addresses.txt
+**/
 char **getVirtualAddressTable(){
     // char *virtualAddressTable;
     unsigned long fileLen;

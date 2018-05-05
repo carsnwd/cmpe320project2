@@ -1,12 +1,8 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "hashmap.c"
-#define PHYSICAL_MEMORY_SIZE 25;
 
-//NOTE!!!! RUN WITH gcc main.c -lm !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 char* convertIntToBinary(int numberToConvert);
 int convertBinaryToInt(char *binary);
 int getPageNumber(int dec);
@@ -14,69 +10,82 @@ int getOffset(int dec);
 void prepend(char* s, const char* t);
 char **getVirtualAddressesValues();
 char **getVirtualAddressTable();
-char *virtualAddressTable[1000];
 
+char *virtualAddressTable[1000];
+int pageTable[256];
+int nextFrameNumberGiven;
+int pageFault;
+int tlb[16][2];
+int tlbHits;
+int tlbFifo;
+const int ADDRESS_COUNT = 1000;
 
 int main(){
     int dec;
     char *bin;
     char *virtualAddressValuesTable;
-    // char *virtualAddressTable;
- 
-    // printf("Enter a decimal number: ");
-    // fflush(stdout);
-    // scanf("%d", &dec);
-    // printf("Your decimal is %d \n", dec);
-    // fflush(stdout);
-    // bin = convertIntToBinary(dec);
-    // printf("Your binary is %s\n", bin);
-    // int pageNumber = getPageNumber(dec);
-    // printf("The page number is: %d\n", pageNumber);
-    // int offset = getOffset(dec);
-    // printf("The offset number is: %d\n", offset);
-
+    nextFrameNumberGiven=0;
+    pageFault = 0;
+    tlbHits = 0;
+    tlbFifo = 0;
+    int i = 0;
+    for(i = 0; i < 256; i++){
+        pageTable[i] = -1;
+    }
     
     virtualAddressValuesTable = getVirtualAddressesValues();
-    //printf("virtualAddressValuesTable[30198] = %d", virtualAddressValuesTable[30198]);
     getVirtualAddressTable();
 
-    // printf("Getting offset and pagenumber for %d\n", atoi(virtualAddressTable[0]));
-    // int dummy = getPageNumber(atoi(virtualAddressTable[0]));
-    // int pageNumber = getPageNumber(atoi(virtualAddressTable[0]));
-    // int offset = getOffset(atoi(virtualAddressTable[0]));
-    // printf("paggenumber = %d   offset = %d\n", pageNumber, offset);
-
-    // printf("virtualAddressValuesTable[%d]\n", atoi(virtualAddressTable[2]));
-    // printf("virtualAddressValuesTable[atoi(virtualAddressTable[2])] = %d\n", virtualAddressValuesTable[atoi(virtualAddressTable[2])]);
-    // printf("virtualAddressTable[2] = %d\n", atoi(virtualAddressTable[2]));
-    // printf("pageNumber = %d\n", pageNumber);
-    // printf("offset = %d", offset);
-    // insert(virtualAddressValuesTable[atoi(virtualAddressTable[2])], atoi(virtualAddressTable[2]), pageNumber, offset);
-    // int physicalAddress = hashFunction(virtualAddressTable[0], pageNumber, offset);
-    // printf("Virtual Address = %d Value = %d  Physical Address = %d\n\n", atoi(virtualAddressTable[0]), virtualAddressValuesTable[atoi(virtualAddressTable[0])], physicalAddress);
-    
-    for(int i = 0; i <= 999; i++){
-        int dummy = getPageNumber(atoi(virtualAddressTable[i]));
+    for(int i = 0; i < ADDRESS_COUNT; i++){
         int pageNumber = getPageNumber(atoi(virtualAddressTable[i]));
         int offset = getOffset(atoi(virtualAddressTable[i]));
-        // printf("pageNumber = %d  offset = %d\n", pageNumber, offset);
-        int physicalAddress = hashFunction(virtualAddressTable[0], pageNumber, offset);
-        printf("Value = %d  Physical Address = %d Virtual Address = %s \n", virtualAddressValuesTable[atoi(virtualAddressTable[i])], physicalAddress, virtualAddressTable[i]);
-        // if(i ==3){
-        //      break;
-        // }
+        int frameNumber = locateFrame(pageNumber);
+        int physicalAddress = calculatePhysicalAddress(frameNumber, offset);
+        printf("Virtual Address = %s Physical Address = %d Value = %d\n", virtualAddressTable[i], physicalAddress,virtualAddressValuesTable[atoi(virtualAddressTable[i])]);
     }
-
-    // printf("virtualAddressTable[0] = %s", virtualAddressTable[0]);
-    // int testIndex = atoi(virtualAddressTable[2]);
-    // printf("virtualAddressValuesTable[virtualAddressTable[2]] = %d", virtualAddressValuesTable[testIndex]);
-    // return 0;
-    //physicalAddress = page * frame + offset
-
-    // insert(10,0);
-    // int val = getHashValue(0);
-    // printf("Value = %d", val);
+    printf("Count of Addresses %d\n", ADDRESS_COUNT);
+    printf("Faults = %d\n", pageFault);
+    double rate1 = (double)pageFault/1000.00;
+    printf("Fault rate = %f\n", rate1);
+    printf("TLB Hits = %d\n", tlbHits);
+    double rate2 = (double)tlbHits/1000.00;
+    printf("TLB Rate = %f\n", rate2);
 }
+
+int calculatePhysicalAddress(int frameNumber, int offset){
+    return (frameNumber*256) + offset;
+}
+
+int locateFrame(int pageNumber){
+    int i = 0;
+    for(i = 0; i<16; i++){
+        if(tlb[i][0] == pageNumber){
+            tlbHits++;
+            return tlb[i][1];
+        }
+    }
+    
+    if(pageTable[pageNumber] != -1){
+        if(tlbFifo == 16){
+            tlbFifo = 0;
+        }
+        tlb[tlbFifo][0] = pageNumber; 
+        tlb[tlbFifo][1] = pageTable[pageNumber];
+        tlbFifo++; 
+        return pageTable[pageNumber];
+    }
+    pageFault++;
+    pageTable[pageNumber] = nextFrameNumberGiven;
+    nextFrameNumberGiven++;
+    if(tlbFifo == 16){
+            tlbFifo = 0;
+    }
+    tlb[tlbFifo][0] = pageNumber; 
+    tlb[tlbFifo][1] = pageTable[pageNumber]; 
+    tlbFifo++;
+    return pageTable[pageNumber];
+}
+
 
 /**
  * Converts an int to binary string. 
@@ -96,14 +105,16 @@ char *convertIntToBinary(int numberToConvert){
         binaryString[k] = binaryArray[j] + '0';
         k++;
     }
-
     char *returnString = malloc(1001);
+    *returnString = NULL;
     int length = strlen(binaryString);
     while(length != 16){ //convert to 16 bit string
-            prepend(returnString, "0");
-            length++;
+        //prepend(returnString, "0");
+        returnString = strcat(returnString,"0");
+        length++;
     }
-    return strcat(returnString, binaryString);
+    char* stuff = strcat(returnString, binaryString);
+    return stuff;
 }
 
 /**
@@ -117,8 +128,7 @@ int convertBinaryToInt(char *binary){
  * Given the int, it will get he page number.
  **/
 int getPageNumber(int dec){
-    char *bin = convertIntToBinary(dec);
-    // printf("bin = %s\n", bin);
+    char* bin = convertIntToBinary(dec);
     char pageNumberBinary[9];
     memcpy(pageNumberBinary, &bin[0], 8);
     pageNumberBinary[8] = '\0';
@@ -193,8 +203,6 @@ char **getVirtualAddressTable(){
         }
         i++;
     }
-
     fclose(ptr);
     return virtualAddressTable;
 }
-

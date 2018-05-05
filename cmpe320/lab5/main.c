@@ -10,11 +10,12 @@ int convertBinaryToInt(char *binary);
 int getPageNumber(int dec);
 int getOffset(int dec);
 void prepend(char* s, const char* t);
-void createPageTable();
+char **createPageTable();
  
 int main(){
     // int dec;
     // char *bin;
+    char *pageTable;
  
     // printf("Enter a decimal number: ");
     // fflush(stdout);
@@ -28,7 +29,9 @@ int main(){
     // int offset = getOffset(dec);
     // printf("The offset number is: %d\n", offset);
 
-    createPageTable();
+    pageTable = createPageTable();
+    printf("758 -> %d\n", pageTable[758]);
+    printf("Physical Address -> %p\n", &pageTable[758]);
     return 0;
 }
 
@@ -106,7 +109,7 @@ void prepend(char* s, const char* t)
     }
 }
 
-void createPageTable(){
+char **createPageTable(){
     char *pageTable;
     unsigned long fileLen;
     FILE *ptr;
@@ -117,12 +120,6 @@ void createPageTable(){
 
     pageTable = (char *)malloc(fileLen+1);
     fread(pageTable, fileLen, 1, ptr);
-    printf("16915 -> %d\n", pageTable[16915]);
-    printf("16916 -> %d\n", pageTable[16916]);
-    printf("30197 -> %d\n", pageTable[30197]);
-    printf("30198 -> %d\n", pageTable[30198]);
-    // for(int i = 0; i < 10; i++){
-    //     printf("Value %d: %d\n", i, pageTable[i]);
-    // }
     fclose(ptr);
+    return pageTable;
 }

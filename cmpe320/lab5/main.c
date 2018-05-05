@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include "hashmap.c"
+#define PHYSICAL_MEMORY_SIZE 25;
 
 //NOTE!!!! RUN WITH gcc main.c -lm !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 char* convertIntToBinary(int numberToConvert);
@@ -14,6 +15,7 @@ void prepend(char* s, const char* t);
 char **getVirtualAddressesValues();
 char **getVirtualAddressTable();
 char *virtualAddressTable[1000];
+
 
 int main(){
     int dec;
@@ -32,10 +34,42 @@ int main(){
     // printf("The page number is: %d\n", pageNumber);
     // int offset = getOffset(dec);
     // printf("The offset number is: %d\n", offset);
+
+    
     virtualAddressValuesTable = getVirtualAddressesValues();
     //printf("virtualAddressValuesTable[30198] = %d", virtualAddressValuesTable[30198]);
     getVirtualAddressTable();
-    printf("virtualAddressTable[0] = %s", virtualAddressTable[0]);
+
+    // printf("Getting offset and pagenumber for %d\n", atoi(virtualAddressTable[0]));
+    // int dummy = getPageNumber(atoi(virtualAddressTable[0]));
+    // int pageNumber = getPageNumber(atoi(virtualAddressTable[0]));
+    // int offset = getOffset(atoi(virtualAddressTable[0]));
+    // printf("paggenumber = %d   offset = %d\n", pageNumber, offset);
+
+    // printf("virtualAddressValuesTable[%d]\n", atoi(virtualAddressTable[2]));
+    // printf("virtualAddressValuesTable[atoi(virtualAddressTable[2])] = %d\n", virtualAddressValuesTable[atoi(virtualAddressTable[2])]);
+    // printf("virtualAddressTable[2] = %d\n", atoi(virtualAddressTable[2]));
+    // printf("pageNumber = %d\n", pageNumber);
+    // printf("offset = %d", offset);
+    // insert(virtualAddressValuesTable[atoi(virtualAddressTable[2])], atoi(virtualAddressTable[2]), pageNumber, offset);
+    // int physicalAddress = hashFunction(virtualAddressTable[0], pageNumber, offset);
+    // printf("Virtual Address = %d Value = %d  Physical Address = %d\n\n", atoi(virtualAddressTable[0]), virtualAddressValuesTable[atoi(virtualAddressTable[0])], physicalAddress);
+    
+    for(int i = 0; i <= 999; i++){
+        int dummy = getPageNumber(atoi(virtualAddressTable[i]));
+        int pageNumber = getPageNumber(atoi(virtualAddressTable[i]));
+        int offset = getOffset(atoi(virtualAddressTable[i]));
+        // printf("pageNumber = %d  offset = %d\n", pageNumber, offset);
+        int physicalAddress = hashFunction(virtualAddressTable[0], pageNumber, offset);
+        printf("Value = %d  Physical Address = %d Virtual Address = %s \n", virtualAddressValuesTable[atoi(virtualAddressTable[i])], physicalAddress, virtualAddressTable[i]);
+        // if(i ==3){
+        //      break;
+        // }
+    }
+
+    // printf("virtualAddressTable[0] = %s", virtualAddressTable[0]);
+    // int testIndex = atoi(virtualAddressTable[2]);
+    // printf("virtualAddressValuesTable[virtualAddressTable[2]] = %d", virtualAddressValuesTable[testIndex]);
     // return 0;
     //physicalAddress = page * frame + offset
 
@@ -84,6 +118,7 @@ int convertBinaryToInt(char *binary){
  **/
 int getPageNumber(int dec){
     char *bin = convertIntToBinary(dec);
+    // printf("bin = %s\n", bin);
     char pageNumberBinary[9];
     memcpy(pageNumberBinary, &bin[0], 8);
     pageNumberBinary[8] = '\0';
@@ -96,6 +131,7 @@ int getPageNumber(int dec){
  **/
 int getOffset(int dec){
     char *bin = convertIntToBinary(dec);
+    // printf("bin %s\n", bin);
     char offsetBinary[9];
     memcpy(offsetBinary, &bin[8], 8);
     offsetBinary[8] = '\0';
@@ -161,3 +197,4 @@ char **getVirtualAddressTable(){
     fclose(ptr);
     return virtualAddressTable;
 }
+

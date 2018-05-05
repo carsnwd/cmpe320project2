@@ -10,24 +10,25 @@ int convertBinaryToInt(char *binary);
 int getPageNumber(int dec);
 int getOffset(int dec);
 void prepend(char* s, const char* t);
-// char* convertBinaryToTwosCompliment(char *binaryString);
+void createPageTable();
  
 int main(){
-    int dec;
-    char *bin;
-    //char *twosCompliment = malloc(1001);
+    // int dec;
+    // char *bin;
  
-    printf("Enter a decimal number: ");
-    fflush(stdout);
-    scanf("%d", &dec);
-    printf("Your decimal is %d \n", dec);
-    fflush(stdout);
-    bin = convertIntToBinary(dec);
-    printf("Your binary is %s\n", bin);
-    int pageNumber = getPageNumber(dec);
-    printf("The page number is: %d\n", pageNumber);
-    int offset = getOffset(dec);
-    printf("The offset number is: %d\n", offset);
+    // printf("Enter a decimal number: ");
+    // fflush(stdout);
+    // scanf("%d", &dec);
+    // printf("Your decimal is %d \n", dec);
+    // fflush(stdout);
+    // bin = convertIntToBinary(dec);
+    // printf("Your binary is %s\n", bin);
+    // int pageNumber = getPageNumber(dec);
+    // printf("The page number is: %d\n", pageNumber);
+    // int offset = getOffset(dec);
+    // printf("The offset number is: %d\n", offset);
+
+    createPageTable();
     return 0;
 }
 
@@ -103,4 +104,25 @@ void prepend(char* s, const char* t)
     for (i = 0; i < len; ++i){
         s[i] = t[i];
     }
+}
+
+void createPageTable(){
+    char *pageTable;
+    unsigned long fileLen;
+    FILE *ptr;
+    ptr = fopen("BACKING_STORE.bin","rb");
+    fseek(ptr, 0, SEEK_END);
+    fileLen = ftell(ptr);
+    fseek(ptr, 0, SEEK_SET);
+
+    pageTable = (char *)malloc(fileLen+1);
+    fread(pageTable, fileLen, 1, ptr);
+    printf("16915 -> %d\n", pageTable[16915]);
+    printf("16916 -> %d\n", pageTable[16916]);
+    printf("30197 -> %d\n", pageTable[30197]);
+    printf("30198 -> %d\n", pageTable[30198]);
+    // for(int i = 0; i < 10; i++){
+    //     printf("Value %d: %d\n", i, pageTable[i]);
+    // }
+    fclose(ptr);
 }

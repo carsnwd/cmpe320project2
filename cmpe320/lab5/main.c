@@ -3,6 +3,13 @@
 #include <string.h>
 #include <math.h>
 
+/**
+* Authors: Carson Wood & Abe Loschner
+* Professor: Dr.S Lee
+* Class: CMPE320
+* Lab 5
+**/
+
 char* convertIntToBinary(int numberToConvert);
 int convertBinaryToInt(char *binary);
 int getPageNumber(int dec);
